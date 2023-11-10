@@ -1,8 +1,6 @@
 import torch
 from abc import ABC, abstractmethod
 
-from models.utils import sigmoid_boundary
-
 
 # class Intervention(torch.nn.Module, ABC):
 
@@ -92,6 +90,9 @@ class BoundlessRotatedSpaceIntervention(torch.nn.Module):
     def __init__(self, embed_dim, **kwargs):
         super().__init__()
         rotate_layer = RotateLayer(embed_dim)
+
+        # Orthogonal parametrizations constrains the weights of the rotate layer to be 
+        # orthogonal during training
         self.rotate_layer = torch.nn.utils.parametrizations.orthogonal(
             rotate_layer)
 
