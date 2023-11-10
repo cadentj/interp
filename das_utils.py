@@ -70,10 +70,12 @@ def pricing_tag_game_example_sampler(
     upper_bound_str = "%.2f" % upper_bound_sample
     if amount_sample >= float(lower_bound_str) and amount_sample <= float(upper_bound_str):
         # label = tokenizer.convert_tokens_to_ids("Yes")
-        label = tokenizer.encode("Yes")[0]
+        # label = tokenizer.encode("Yes")[1]
+        label = 8241
     else:
         # label = tokenizer.convert_tokens_to_ids("No")
-        label = tokenizer.encode("No")[0]
+        # label = tokenizer.encode("No")[1]
+        label = 3782
 
     amount_str = "%.2f dollars" % amount_sample
     instruction = f"Please say yes only if it costs between {lower_bound_str} and {upper_bound_str} dollars, otherwise no."

@@ -27,6 +27,43 @@ from models.utils import sigmoid_boundary
 #         super().__init__()
 #         self.trainble = True
 
+
+
+# Boundless DAS Acc
+
+# You can define your custom compute_metrics function.
+def compute_metrics(eval_preds, eval_labels):
+    total_count = 0
+    correct_count = 0
+    for eval_pred, eval_label in zip(eval_preds, eval_labels):
+        actual_test_labels = eval_label[:, -1]
+        pred_test_labels = torch.argmax(eval_pred[:, -1], dim=-1)
+        correct_labels = (actual_test_labels==pred_test_labels)
+        total_count += len(correct_labels)
+        correct_count += correct_labels.sum().tolist()
+    accuracy = round(correct_count/total_count, 2)
+    return {"accuracy" : accuracy}
+
+# Boundless DAS Loss
+
+def calculate_loss(logits, labels):
+    shift_logits = logits[..., :, :].contiguous()
+    shift_labels = labels[..., :].contiguous()
+    # Flatten the tokens
+    loss_fct = CrossEntropyLoss()
+    shift_logits = shift_logits.view(-1, alignable.model_config.vocab_size)
+    shift_labels = shift_labels.view(-1)
+    # Enable model parallelism
+    shift_labels = shift_labels.to(shift_logits.device)
+    loss = loss_fct(shift_logits, shift_labels)
+    
+    for k, v in alignable.interventions.items():
+        boundary_loss = 1. * v[0].intervention_boundaries.sum()
+    loss += boundary_loss
+    
+    return loss
+
+
 def sigmoid_boundary(_input, boundary_x, boundary_y, temperature):
     """Generate sigmoid mask"""
     return torch.sigmoid((_input - boundary_x) / temperature) * \
