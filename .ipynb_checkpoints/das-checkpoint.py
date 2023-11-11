@@ -2,31 +2,6 @@ import torch
 from abc import ABC, abstractmethod
 from torch.nn import CrossEntropyLoss
 
-# class Intervention(torch.nn.Module, ABC):
-
-#     """Intervention the original representations."""
-#     def __init__(self):
-#         super().__init__()
-#         self.trainble = False
-        
-#     @abstractmethod
-#     def set_interchange_dim(self, interchange_dim):
-#         pass
-
-#     @abstractmethod
-#     def forward(self, base, source):
-#         pass
-    
-    
-# class TrainbleIntervention(Intervention):
-
-#     """Intervention the original representations."""
-#     def __init__(self):
-#         super().__init__()
-#         self.trainble = True
-
-
-
 # Boundless DAS Acc
 
 # You can define your custom compute_metrics function.
@@ -41,25 +16,6 @@ def compute_metrics(eval_preds, eval_labels):
         correct_count += correct_labels.sum().tolist()
     accuracy = round(correct_count/total_count, 2)
     return {"accuracy" : accuracy}
-
-# Boundless DAS Loss
-vocab_size = 32001
-def calculate_loss(logits, labels):
-    shift_logits = logits[..., :, :].contiguous()
-    shift_labels = labels[..., :].contiguous()
-    # Flatten the tokens
-    loss_fct = CrossEntropyLoss()
-    shift_logits = shift_logits.view(-1, vocab_size)
-    shift_labels = shift_labels.view(-1)
-    # Enable model parallelism
-    shift_labels = shift_labels.to(shift_logits.device)
-    loss = loss_fct(shift_logits, shift_labels)
-
-    boundary_loss = 1. * rotatedSpaceIntervention.intervention_boundaries.sum()
-    loss += boundary_loss
-    
-    return loss
-
 
 def sigmoid_boundary(_input, boundary_x, boundary_y, temperature):
     """Generate sigmoid mask"""
