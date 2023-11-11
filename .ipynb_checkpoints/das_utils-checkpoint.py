@@ -119,3 +119,138 @@ def factual_sampler(
         all_output_ids += [output_ids]
         
     return all_input_ids, all_output_ids
+
+
+
+
+
+def sample_with_region(
+    region,
+    lower_bound_sample,
+    upper_bound_sample
+):
+    if region == 1:
+        amount_sample = round(random.uniform(0.01, lower_bound_sample - 0.01), 2)
+    elif region == 2:
+        amount_sample = round(random.uniform(lower_bound_sample, upper_bound_sample), 2)
+    elif region == 3:
+        amount_sample = round(random.uniform(upper_bound_sample + 0.01, 9.99), 2)
+    return amount_sample
+        
+def lower_bound_alignment_example_sampler(
+    tokenizer,
+    amount=None,
+    lower_bound=None,
+    bound_width=None
+):
+    base_lower_bound_sample, base_upper_bound_sample, _ = \
+        pricing_tag_game_config_sampler(
+            amount,
+            lower_bound,
+            bound_width
+        )
+    source_lower_bound_sample, source_upper_bound_sample, _ = \
+        pricing_tag_game_config_sampler(
+            amount,
+            lower_bound,
+            bound_width
+        )
+    
+    ctf_label_str = random.choice(["Yes", "No"])
+    if ctf_label_str == "Yes":
+        # ctf_label = tokenizer.convert_tokens_to_ids("Yes")
+        ctf_label = 8241
+        base_source_regions = [
+            [1,2],
+            [1,3],
+            [2,2],
+        ]
+    elif ctf_label_str == "No":
+        # ctf_label = tokenizer.convert_tokens_to_ids("No")
+        ctf_label = 3782
+        base_source_regions = [
+            [1,1],
+            [2,1],
+            [2,3],
+            [3,1],
+            [3,2],
+            [3,3]
+        ]
+    base_source_region = random.choice(base_source_regions)
+    base_region = base_source_region[0]
+    source_region = base_source_region[1]
+
+    base_amount_sample = sample_with_region(
+        base_region, base_lower_bound_sample, base_upper_bound_sample)
+    source_amount_sample = sample_with_region(
+        source_region, source_lower_bound_sample, source_upper_bound_sample)
+        
+    return base_lower_bound_sample, base_upper_bound_sample, \
+        source_lower_bound_sample, source_upper_bound_sample, \
+        base_amount_sample, source_amount_sample, ctf_label, ctf_label_str
+
+def bound_alignment_sampler(
+    tokenizer,
+    max_n_training_examples,
+    bound_functors,
+    amount=None,
+    lower_bound=None,
+    bound_width=None,
+):
+    all_base_input_ids = []
+    all_source_input_ids = []
+    all_ctf_output_ids = [] # this one does not have input ids, etc..
+    all_intervention_ids = []
+    
+    for _ in range(max_n_training_examples):
+        bound_functor = random.choice(bound_functors)
+        base_lower_bound_sample, base_upper_bound_sample, \
+            source_lower_bound_sample, source_upper_bound_sample, \
+            base_amount_sample, source_amount_sample, \
+            ctf_label, ctf_label_str = bound_functor(
+                tokenizer,
+                amount,
+                lower_bound,
+                bound_width,
+            )
+
+        base_amount_str = "%.2f dollars" % base_amount_sample
+        source_amount_str = "%.2f dollars" % source_amount_sample
+        base_lower_bound_str = "%.2f" % base_lower_bound_sample
+        base_upper_bound_str = "%.2f" % base_upper_bound_sample
+        source_lower_bound_str = "%.2f" % source_lower_bound_sample
+        source_upper_bound_str = "%.2f" % source_upper_bound_sample
+        
+        # print(f"base: [{base_lower_bound_str}, {base_upper_bound_str}], {base_amount_str}")
+        # print(f"source: [{source_lower_bound_str}, {source_upper_bound_str}], {source_amount_str}")
+        # print(f"ctf label: {ctf_label_str}")
+        
+        base_instruction = f"Please say yes only if it costs between {base_lower_bound_str} and {base_upper_bound_str} dollars, otherwise no."
+        source_instruction = f"Please say yes only if it costs between {source_lower_bound_str} and {source_upper_bound_str} dollars, otherwise no."
+        
+        base_alpaca_prompt = alpaca_prompt_template % (base_instruction, base_amount_str)
+        source_alpaca_prompt = alpaca_prompt_template % (source_instruction, source_amount_str)
+        
+        # base_input_ids = tokenizer(base_alpaca_prompt, return_tensors="pt").input_ids[0]
+        # source_input_ids = tokenizer(source_alpaca_prompt, return_tensors="pt").input_ids[0]
+
+        base_input_ids = tokenizer.encode(base_alpaca_prompt)
+        source_input_ids = tokenizer.encode(source_alpaca_prompt)
+
+        
+        # base_input_ids = base_input_ids.tolist()
+        # source_input_ids = source_input_ids.tolist()
+        ctf_output_ids = (torch.ones(len(base_input_ids))*-100).long().tolist()
+        ctf_output_ids[-1] = ctf_label
+        intervention_id = 0 if bound_functor == bound_functors[0] else 1
+        
+        all_base_input_ids += [base_input_ids]
+        all_source_input_ids += [source_input_ids]
+        
+        all_ctf_output_ids += [ctf_output_ids]
+        all_intervention_ids += [intervention_id]
+        
+        assert len(base_input_ids) == 82
+        assert len(source_input_ids) == 82
+        
+    return all_base_input_ids, all_source_input_ids, all_ctf_output_ids, all_intervention_ids

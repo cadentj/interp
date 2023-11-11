@@ -1,6 +1,6 @@
 import torch
 from abc import ABC, abstractmethod
-
+from torch.nn import CrossEntropyLoss
 
 # class Intervention(torch.nn.Module, ABC):
 
@@ -43,20 +43,19 @@ def compute_metrics(eval_preds, eval_labels):
     return {"accuracy" : accuracy}
 
 # Boundless DAS Loss
-
+vocab_size = 32001
 def calculate_loss(logits, labels):
     shift_logits = logits[..., :, :].contiguous()
     shift_labels = labels[..., :].contiguous()
     # Flatten the tokens
     loss_fct = CrossEntropyLoss()
-    shift_logits = shift_logits.view(-1, alignable.model_config.vocab_size)
+    shift_logits = shift_logits.view(-1, vocab_size)
     shift_labels = shift_labels.view(-1)
     # Enable model parallelism
     shift_labels = shift_labels.to(shift_logits.device)
     loss = loss_fct(shift_logits, shift_labels)
-    
-    for k, v in alignable.interventions.items():
-        boundary_loss = 1. * v[0].intervention_boundaries.sum()
+
+    boundary_loss = 1. * rotatedSpaceIntervention.intervention_boundaries.sum()
     loss += boundary_loss
     
     return loss
@@ -105,6 +104,13 @@ class BoundlessRotatedSpaceIntervention(torch.nn.Module):
         
     def get_boundary_parameters(self):
         return self.intervention_boundaries
+
+    # temporarily in here
+    def zero_grad(self):
+        """Zero out the gradients of all parameters in this module."""
+        for param in self.parameters():
+            if param.grad is not None:
+                param.grad.zero_()
 
     def get_temperature(self):
         return self.temperature
