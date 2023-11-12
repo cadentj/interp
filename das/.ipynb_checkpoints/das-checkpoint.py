@@ -92,7 +92,7 @@ class BoundlessRotatedSpaceIntervention(torch.nn.Module):
             self.temperature
         )
         boundary_mask = torch.ones(
-            batch_size, device=base.device).unsqueeze(dim=-1)*boundary_mask
+            batch_size).unsqueeze(dim=-1)*boundary_mask
         boundary_mask = boundary_mask.to(rotated_base.dtype)
         # interchange
         rotated_output = (1. - boundary_mask)*rotated_base + boundary_mask*rotated_source
