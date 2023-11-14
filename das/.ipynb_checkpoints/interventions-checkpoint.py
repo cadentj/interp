@@ -1,45 +1,34 @@
 import torch
 from abc import ABC, abstractmethod
-from torch.nn import CrossEntropyLoss
 
-# Boundless DAS Acc
+from transformations import RotateLayer
+from interventions_utils import sigmoid_boundary
 
-# You can define your custom compute_metrics function.
-def compute_metrics(eval_preds, eval_labels):
-    total_count = 0
-    correct_count = 0
-    for eval_pred, eval_label in zip(eval_preds, eval_labels):
-        actual_test_labels = eval_label[:, -1]
-        pred_test_labels = torch.argmax(eval_pred[:, -1], dim=-1)
-        correct_labels = (actual_test_labels==pred_test_labels)
-        total_count += len(correct_labels)
-        correct_count += correct_labels.sum().tolist()
-    accuracy = round(correct_count/total_count, 2)
-    return {"accuracy" : accuracy}
 
-def sigmoid_boundary(_input, boundary_x, boundary_y, temperature):
-    """Generate sigmoid mask"""
-    return torch.sigmoid((_input - boundary_x) / temperature) * \
-        torch.sigmoid((boundary_y - _input) / temperature)
+class Intervention(torch.nn.Module, ABC):
 
-class RotateLayer(torch.nn.Module):
-    """A linear transformation with orthogonal initialization."""
-
-    def __init__(self, n, init_orth=True):
+    """Intervention the original representations."""
+    def __init__(self):
         super().__init__()
-        weight = torch.empty(n, n)
-        # we don't need init if the saved checkpoint has a nice
-        # starting point already.
-        # you can also study this if you want, but it is our focus.
-        if init_orth:
-            torch.nn.init.orthogonal_(weight)
-        self.weight = torch.nn.Parameter(weight, requires_grad=True)
+        self.trainble = False
+        
+    @abstractmethod
+    def set_interchange_dim(self, interchange_dim):
+        pass
 
-    def forward(self, x):
-        return torch.matmul(x.to(self.weight.dtype), self.weight)
+    @abstractmethod
+    def forward(self, base, source):
+        pass
+
+class TrainbleIntervention(Intervention):
+
+    """Intervention the original representations."""
+    def __init__(self):
+        super().__init__()
+        self.trainble = True
 
 
-class BoundlessRotatedSpaceIntervention(torch.nn.Module):
+class BoundlessRotatedSpaceIntervention(TrainbleIntervention):
     
     """Intervention in the rotated space with boundary mask."""
     def __init__(self, embed_dim, **kwargs):
@@ -91,14 +80,17 @@ class BoundlessRotatedSpaceIntervention(torch.nn.Module):
             intervention_boundaries[0] * int(self.embed_dim),
             self.temperature
         )
+
+        # print(boundary_mask.get_device())
         boundary_mask = torch.ones(
-            batch_size).unsqueeze(dim=-1)*boundary_mask
-        boundary_mask = boundary_mask.to(rotated_base.dtype)
+            batch_size).unsqueeze(dim=-1).to(boundary_mask.device)*boundary_mask
+        # boundary_mask = boundary_mask.to(rotated_base.dtype)
         # interchange
         rotated_output = (1. - boundary_mask)*rotated_base + boundary_mask*rotated_source
         # inverse output
         output = torch.matmul(rotated_output, self.rotate_layer.weight.T)
-        return output.to(base.dtype)
+        # return output.to(base.dtype)
+        return output
     
     def __str__(self):
         return f"BoundlessRotatedSpaceIntervention(embed_dim={self.embed_dim})"
