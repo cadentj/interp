@@ -21,11 +21,11 @@ from jaxtyping import Float, Int
 from transformers import AutoModelForCausalLM, AutoTokenizer, PreTrainedTokenizerBase
 from typing_extensions import Literal
 
-import transformer_lens.loading_from_pretrained as loading
-import transformer_lens.utils as utils
-from transformer_lens import HookedTransformerConfig
-from transformer_lens.ActivationCache import ActivationCache
-from transformer_lens.components import (
+import loading_from_pretrained as loading
+import utils as utils
+from HookedTransformerConfig import HookedTransformerConfig
+# from transformer_lens.ActivationCache import ActivationCache
+from components import (
     Embed,
     LayerNorm,
     LayerNormPre,
@@ -35,14 +35,14 @@ from transformer_lens.components import (
     TransformerBlock,
     Unembed,
 )
-from transformer_lens.FactoredMatrix import FactoredMatrix
-from transformer_lens.hook_points import HookedRootModule, HookPoint
+from FactoredMatrix import FactoredMatrix
+from Nneuron import Nneuron
 
 # Note - activation cache is used with run_with_cache, past_key_value_caching is used for
 # generation.
-from transformer_lens.past_key_value_caching import HookedTransformerKeyValueCache
-from transformer_lens.utilities import devices
-from transformer_lens.utils import USE_DEFAULT_VALUE
+from past_key_value_caching import HookedTransformerKeyValueCache
+import utilities as devices
+from utils import USE_DEFAULT_VALUE
 
 SingleLoss = Float[torch.Tensor, ""]  # Type alias for a single element tensor
 LossPerToken = Float[torch.Tensor, "batch pos-1"]
@@ -68,11 +68,11 @@ class Output(NamedTuple):
     loss: Loss
 
 
-class HookedTransformer(torch.nn.Module):
+class UnifiedTransformer(torch.nn.Module):
     """Hooked Transformer.
 
     Implements a full Transformer using the components :doc:`here <transformer_lens.components>`,
-    with a :class:`transformer_lens.hook_points.HookPoint` on every interesting activation.
+    with a :class:`transformer_lens.hook_points.Nneuron` on every interesting activation.
 
     TransformerLens comes loaded with >50 GPT-style models. Typically you initialise it with one of
     these via :meth:`from_pretrained`, although it can also be instantiated with randomly
@@ -140,15 +140,15 @@ class HookedTransformer(torch.nn.Module):
         #             "default_padding_side is explictly given but ignored because tokenizer is not set."
         #         )
 
-        # self.embed = Embed(self.cfg)
-        # self.hook_embed = HookPoint()  # [batch, pos, d_model]
+        self.embed = Embed(self.cfg)
+        # self.hook_embed = Nneuron()  # [batch, pos, d_model]
 
         if self.cfg.positional_embedding_type != "rotary":
             self.pos_embed = PosEmbed(self.cfg)
-            self.hook_pos_embed = HookPoint()  # [batch, pos, d__dictmodel]
+            self.hook_pos_embed = Nneuron()  # [batch, pos, d__dictmodel]
 
         if self.cfg.use_hook_tokens:
-            self.hook_tokens = HookPoint()  # [batch, pos]
+            self.hook_tokens = Nneuron()  # [batch, pos]
 
         self.blocks = nn.ModuleList(
             [
@@ -196,8 +196,18 @@ class HookedTransformer(torch.nn.Module):
         self.dataset = None
 
         # Gives each module a parameter with its name (relative to this root module)
-        # Needed for HookPoints to work
+        # Needed for Nneurons to work
         # self.setup()
+
+        self.mod_dict = {}
+        self.hook_dict: Dict[str, Nneuron] = {}
+        for name, module in self.named_modules():
+            if name == "":
+                continue
+            module.name = name
+            self.mod_dict[name] = module
+            if "Nneuron" in str(type(module)):
+                self.hook_dict[name] = module
 
     def check_hooks_to_add(
         self,
@@ -602,45 +612,46 @@ class HookedTransformer(torch.nn.Module):
             tokens = tokens.to(logits.device)
         return utils.lm_cross_entropy_loss(logits, tokens, per_token)
 
-    @overload
-    def run_with_cache(
-        self, *model_args, return_cache_object: Literal[True] = True, **kwargs
-    ) -> Tuple[Output, ActivationCache]:
-        ...
+    # Can delete in the future. Leaving in as a reminder that I need to implement some ActivationCache specifc methods. 
+    # @overload
+    # def run_with_cache(
+    #     self, *model_args, return_cache_object: Literal[True] = True, **kwargs
+    # ) -> Tuple[Output, ActivationCache]:
+    #     ...
 
-    @overload
-    def run_with_cache(
-        self, *model_args, return_cache_object: Literal[False] = False, **kwargs
-    ) -> Tuple[Output, Dict[str, torch.Tensor]]:
-        ...
+    # @overload
+    # def run_with_cache(
+    #     self, *model_args, return_cache_object: Literal[False] = False, **kwargs
+    # ) -> Tuple[Output, Dict[str, torch.Tensor]]:
+    #     ...
 
-    def run_with_cache(
-        self, *model_args, return_cache_object=True, remove_batch_dim=False, **kwargs
-    ) -> Tuple[
-        Union[
-            None,
-            Float[torch.Tensor, "batch pos d_vocab"],
-            Loss,
-            Tuple[Float[torch.Tensor, "batch pos d_vocab"], Loss],
-        ],
-        Union[ActivationCache, Dict[str, torch.Tensor]],
-    ]:
-        """Wrapper around `run_with_cache` in HookedRootModule.
+    # def run_with_cache(
+    #     self, *model_args, return_cache_object=True, remove_batch_dim=False, **kwargs
+    # ) -> Tuple[
+    #     Union[
+    #         None,
+    #         Float[torch.Tensor, "batch pos d_vocab"],
+    #         Loss,
+    #         Tuple[Float[torch.Tensor, "batch pos d_vocab"], Loss],
+    #     ],
+    #     Union[ActivationCache, Dict[str, torch.Tensor]],
+    # ]:
+    #     """Wrapper around `run_with_cache` in HookedRootModule.
 
-        If return_cache_object is True, this will return an ActivationCache object, with a bunch of
-        useful HookedTransformer specific methods, otherwise it will return a dictionary of
-        activations as in HookedRootModule.
-        """
-        out, cache_dict = super().run_with_cache(
-            *model_args, remove_batch_dim=remove_batch_dim, **kwargs
-        )
-        if return_cache_object:
-            cache = ActivationCache(
-                cache_dict, self, has_batch_dim=not remove_batch_dim
-            )
-            return out, cache
-        else:
-            return out, cache_dict
+    #     If return_cache_object is True, this will return an ActivationCache object, with a bunch of
+    #     useful HookedTransformer specific methods, otherwise it will return a dictionary of
+    #     activations as in HookedRootModule.
+    #     """
+    #     out, cache_dict = super().run_with_cache(
+    #         *model_args, remove_batch_dim=remove_batch_dim, **kwargs
+    #     )
+    #     if return_cache_object:
+    #         cache = ActivationCache(
+    #             cache_dict, self, has_batch_dim=not remove_batch_dim
+    #         )
+    #         return out, cache
+    #     else:
+    #         return out, cache_dict
 
     def set_tokenizer(
         self,
