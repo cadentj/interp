@@ -141,7 +141,7 @@ class UnifiedTransformer(torch.nn.Module):
         #         )
 
         self.embed = Embed(self.cfg)
-        # self.hook_embed = Nneuron()  # [batch, pos, d_model]
+        self.hook_embed = Nneuron()  # [batch, pos, d_model]
 
         if self.cfg.positional_embedding_type != "rotary":
             self.pos_embed = PosEmbed(self.cfg)
@@ -357,7 +357,7 @@ class UnifiedTransformer(torch.nn.Module):
     @overload
     def forward(
         self,
-        input,
+        input_ids,
         return_type: Literal["logits"],
         loss_per_token: Optional[bool] = False,
         prepend_bos: Optional[Union[bool, None]] = USE_DEFAULT_VALUE,
@@ -378,7 +378,7 @@ class UnifiedTransformer(torch.nn.Module):
     @overload
     def forward(
         self,
-        input,
+        input_ids,
         return_type: Literal["loss"],
         loss_per_token: Optional[bool] = False,
         prepend_bos: Optional[Union[bool, None]] = USE_DEFAULT_VALUE,
@@ -399,7 +399,7 @@ class UnifiedTransformer(torch.nn.Module):
     @overload
     def forward(
         self,
-        input,
+        input_ids,
         return_type: Literal["both"],
         loss_per_token: Optional[bool] = False,
         prepend_bos: Optional[Union[bool, None]] = USE_DEFAULT_VALUE,
@@ -420,7 +420,7 @@ class UnifiedTransformer(torch.nn.Module):
     @overload
     def forward(
         self,
-        input,
+        input_ids,
         return_type: Literal[None],
         loss_per_token: Optional[bool] = False,
         prepend_bos: Optional[Union[bool, None]] = USE_DEFAULT_VALUE,
@@ -440,7 +440,7 @@ class UnifiedTransformer(torch.nn.Module):
 
     def forward(
         self,
-        input: Union[
+        input_ids: Union[
             str,
             List[str],
             Int[torch.Tensor, "batch pos"],
@@ -535,14 +535,14 @@ class UnifiedTransformer(torch.nn.Module):
                     shortformer_pos_embed,
                     attention_mask,
                 ) = self.input_to_embed(
-                    input,
+                    input_ids,
                     prepend_bos=prepend_bos,
                     padding_side=padding_side,
                     past_kv_cache=past_kv_cache,
                 )
             else:
-                assert type(input) == torch.Tensor
-                residual = input
+                assert type(input_ids) == torch.Tensor
+                residual = input_ids
 
             if start_at_layer is None:
                 start_at_layer = 0
