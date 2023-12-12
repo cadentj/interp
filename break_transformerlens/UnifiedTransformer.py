@@ -141,11 +141,10 @@ class UnifiedTransformer(torch.nn.Module):
         #         )
 
         self.embed = Embed(self.cfg)
-        self.hook_embed = Nneuron()  # [batch, pos, d_model]
 
         if self.cfg.positional_embedding_type != "rotary":
             self.pos_embed = PosEmbed(self.cfg)
-            self.hook_pos_embed = Nneuron()  # [batch, pos, d__dictmodel]
+            # self.hook_pos_embed = Nneuron()  # [batch, pos, d__dictmodel]
 
         if self.cfg.use_hook_tokens:
             self.hook_tokens = Nneuron()  # [batch, pos]
@@ -209,31 +208,31 @@ class UnifiedTransformer(torch.nn.Module):
             if "Nneuron" in str(type(module)):
                 self.hook_dict[name] = module
 
-    def check_hooks_to_add(
-        self,
-        hook_point,
-        hook_point_name,
-        hook,
-        dir="fwd",
-        is_permanent=False,
-        prepend=False,
-    ) -> None:
-        if hook_point_name.endswith("attn.hook_result"):
-            assert (
-                self.cfg.use_attn_result
-            ), f"Cannot add hook {hook_point_name} if use_attn_result_hook is False"
-        if hook_point_name.endswith(("hook_q_input", "hook_k_input", "hook_v_input")):
-            assert (
-                self.cfg.use_split_qkv_input
-            ), f"Cannot add hook {hook_point_name} if use_split_qkv_input is False"
-        if hook_point_name.endswith("mlp_in"):
-            assert (
-                self.cfg.use_hook_mlp_in
-            ), f"Cannot add hook {hook_point_name} if use_hook_mlp_in is False"
-        if hook_point_name.endswith("attn_in"):
-            assert (
-                self.cfg.use_attn_in
-            ), f"Cannot add hook {hook_point_name} if use_attn_in is False"
+    # def check_hooks_to_add(
+    #     self,
+    #     hook_point,
+    #     hook_point_name,
+    #     hook,
+    #     dir="fwd",
+    #     is_permanent=False,
+    #     prepend=False,
+    # ) -> None:
+    #     if hook_point_name.endswith("attn.hook_result"):
+    #         assert (
+    #             self.cfg.use_attn_result
+    #         ), f"Cannot add hook {hook_point_name} if use_attn_result_hook is False"
+    #     if hook_point_name.endswith(("hook_q_input", "hook_k_input", "hook_v_input")):
+    #         assert (
+    #             self.cfg.use_split_qkv_input
+    #         ), f"Cannot add hook {hook_point_name} if use_split_qkv_input is False"
+    #     if hook_point_name.endswith("mlp_in"):
+    #         assert (
+    #             self.cfg.use_hook_mlp_in
+    #         ), f"Cannot add hook {hook_point_name} if use_hook_mlp_in is False"
+    #     if hook_point_name.endswith("attn_in"):
+    #         assert (
+    #             self.cfg.use_attn_in
+    #         ), f"Cannot add hook {hook_point_name} if use_attn_in is False"
 
     def input_to_embed(
         self,
@@ -324,19 +323,15 @@ class UnifiedTransformer(torch.nn.Module):
             pos_offset = cache_ctx_length
         if self.cfg.use_hook_tokens:
             tokens = self.hook_tokens(tokens)
-        embed = self.hook_embed(self.embed(tokens))  # [batch, pos, d_model]
+        embed = self.embed(tokens)  # [batch, pos, d_model]
         if self.cfg.positional_embedding_type == "standard":
-            pos_embed = self.hook_pos_embed(
-                self.pos_embed(tokens, pos_offset, attention_mask)
-            )  # [batch, pos, d_model]
+            pos_embed = self.pos_embed(tokens, pos_offset, attention_mask) # [batch, pos, d_model]
             residual = embed + pos_embed  # [batch, pos, d_model]
             shortformer_pos_embed = None
         elif self.cfg.positional_embedding_type == "shortformer":
             # If we're using shortformer style attention, we don't add the positional embedding to
             # the residual stream. See HookedTransformerConfig for details
-            pos_embed = self.hook_pos_embed(
-                self.pos_embed(tokens, pos_offset, attention_mask)
-            )  # [batch, pos, d_model]
+            pos_embed = self.pos_embed(tokens, pos_offset, attention_mask) # [batch, pos, d_model]
             residual = embed
             shortformer_pos_embed = pos_embed
         elif self.cfg.positional_embedding_type == "rotary":
@@ -1061,10 +1056,10 @@ class UnifiedTransformer(torch.nn.Module):
 
     def move_model_modules_to_device(self):
         self.embed.to(devices.get_device_for_block_index(0, self.cfg))
-        self.hook_embed.to(devices.get_device_for_block_index(0, self.cfg))
+        # self.hook_embed.to(devices.get_device_for_block_index(0, self.cfg))
         if self.cfg.positional_embedding_type != "rotary":
             self.pos_embed.to(devices.get_device_for_block_index(0, self.cfg))
-            self.hook_pos_embed.to(devices.get_device_for_block_index(0, self.cfg))
+            # self.hook_pos_embed.to(devices.get_device_for_block_index(0, self.cfg))
         if hasattr(self, "ln_final"):
             self.ln_final.to(
                 devices.get_device_for_block_index(self.cfg.n_layers - 1, self.cfg)

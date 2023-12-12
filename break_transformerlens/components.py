@@ -245,9 +245,9 @@ class LayerNormPre(nn.Module):
         self.eps = self.cfg.eps
 
         # Adds a hook point for the normalisation scale factor
-        self.hook_scale = Nneuron()  # [batch, pos]
+        self.scale_factor = Nneuron()  # [batch, pos]
         # Hook Normalized captures LN output - here it's a vector with std 1 and mean 0
-        self.hook_normalized = Nneuron()  # [batch, pos, length]
+        self.normalized = Nneuron()  # [batch, pos, length]
 
     def forward(
         self,
@@ -266,8 +266,8 @@ class LayerNormPre(nn.Module):
         scale: Union[
             Float[torch.Tensor, "batch pos 1"],
             Float[torch.Tensor, "batch pos head_index 1"],
-        ] = self.hook_scale((x.pow(2).mean(-1, keepdim=True) + self.eps).sqrt())
-        return self.hook_normalized(x / scale).to(self.cfg.dtype)
+        ] = self.scale_factor((x.pow(2).mean(-1, keepdim=True) + self.eps).sqrt())
+        return self.normalized(x / scale).to(self.cfg.dtype)
 
 
 class LayerNorm(nn.Module):
@@ -293,9 +293,9 @@ class LayerNorm(nn.Module):
         self.b = nn.Parameter(torch.zeros(self.length, dtype=cfg.dtype))
 
         # Adds a hook point for the normalisation scale factor
-        self.hook_scale = Nneuron()  # [batch, pos, 1]
-        # Hook_normalized is on the LN output
-        self.hook_normalized = Nneuron()  # [batch, pos, length]
+        self.scale_factor = Nneuron()  # [batch, pos, 1]
+        # normalized is on the LN output
+        self.normalized = Nneuron()  # [batch, pos, length]
 
     def forward(
         self,
@@ -311,11 +311,11 @@ class LayerNorm(nn.Module):
             x = x.to(torch.float32)
 
         x = x - x.mean(axis=-1, keepdim=True)  # [batch, pos, length]
-        scale: Float[torch.Tensor, "batch pos 1"] = self.hook_scale(
+        scale: Float[torch.Tensor, "batch pos 1"] = self.scale_factor(
             (x.pow(2).mean(-1, keepdim=True) + self.eps).sqrt()
         )
         x = x / scale  # [batch, pos, length]
-        return self.hook_normalized(x * self.w + self.b).to(self.cfg.dtype)
+        return self.normalized(x * self.w + self.b).to(self.cfg.dtype)
 
 
 class RMSNormPre(nn.Module):
@@ -328,8 +328,8 @@ class RMSNormPre(nn.Module):
         self.eps = self.cfg.eps
 
         # Adds a hook point for the normalisation scale factor
-        self.hook_scale = Nneuron()  # [batch, pos]
-        self.hook_normalized = Nneuron()  # [batch, pos, length]
+        self.scale_factor = Nneuron()  # [batch, pos]
+        self.normalized = Nneuron()  # [batch, pos, length]
 
     def forward(
         self, x: Float[torch.Tensor, "batch pos length"]
@@ -337,10 +337,10 @@ class RMSNormPre(nn.Module):
         if self.cfg.dtype not in [torch.float32, torch.float64]:
             x = x.to(torch.float32)
 
-        scale: Float[torch.Tensor, "batch pos 1"] = self.hook_scale(
+        scale: Float[torch.Tensor, "batch pos 1"] = self.scale_factor(
             (x.pow(2).mean(-1, keepdim=True) + self.eps).sqrt()
         )
-        return self.hook_normalized(x / scale).to(
+        return self.normalized(x / scale).to(
             self.cfg.dtype
         )  # [batch, pos, length]
 
@@ -367,8 +367,8 @@ class RMSNorm(nn.Module):
         self.w = nn.Parameter(torch.ones(self.length, dtype=cfg.dtype))
 
         # Adds a hook point for the normalisation scale factor
-        self.hook_scale = Nneuron()  # [batch, pos, 1]
-        self.hook_normalized = Nneuron()  # [batch, pos, length]
+        self.scale_factor = Nneuron()  # [batch, pos, 1]
+        self.normalized = Nneuron()  # [batch, pos, length]
 
     def forward(
         self, x: Float[torch.Tensor, "batch pos length"]
@@ -376,10 +376,10 @@ class RMSNorm(nn.Module):
         if self.cfg.dtype not in [torch.float32, torch.float64]:
             x = x.to(torch.float32)
 
-        scale: Float[torch.Tensor, "batch pos 1"] = self.hook_scale(
+        scale: Float[torch.Tensor, "batch pos 1"] = self.scale_factor(
             (x.pow(2).mean(-1, keepdim=True) + self.eps).sqrt()
         )
-        x = self.hook_normalized(x / scale).to(self.cfg.dtype)  # [batch, pos, length]
+        x = self.normalized(x / scale).to(self.cfg.dtype)  # [batch, pos, length]
         return x * self.w
 
 
@@ -463,13 +463,13 @@ class Attention(nn.Module):
         if self.cfg.scale_attn_by_inverse_layer_idx:
             self.attn_scale *= self.layer_id + 1
 
-        self.hook_k = Nneuron()  # [batch, pos, head_index, d_head]
-        self.hook_q = Nneuron()  # [batch, pos, head_index, d_head]
-        self.hook_v = Nneuron()  # [batch, pos, head_index, d_head]
-        self.hook_z = Nneuron()  # [batch, pos, head_index, d_head]
-        self.hook_attn_scores = Nneuron()  # [batch, head_index, query_pos, key_pos]
-        self.hook_pattern = Nneuron()  # [batch, head_index, query_pos, key_pos]
-        self.hook_result = Nneuron()  # [batch, pos, head_index, d_model]
+        self.k = Nneuron()  # [batch, pos, head_index, d_head]
+        self.q = Nneuron()  # [batch, pos, head_index, d_head]
+        self.v = Nneuron()  # [batch, pos, head_index, d_head]
+        self.z = Nneuron()  # [batch, pos, head_index, d_head]
+        self.attn_scores = Nneuron()  # [batch, head_index, query_pos, key_pos]
+        self.pattern = Nneuron()  # [batch, head_index, query_pos, key_pos]
+        self.result = Nneuron()  # [batch, pos, head_index, d_model]
 
         # See HookedTransformerConfig for more details.
         if self.cfg.positional_embedding_type == "shortformer":
@@ -543,7 +543,7 @@ class Attention(nn.Module):
             qkv_einops_string = "batch pos head_index d_model"
         else:
             qkv_einops_string = "batch pos d_model"
-        q = self.hook_q(
+        q = self.q(
             einsum(
                 f"{qkv_einops_string}, head_index d_model d_head \
                 -> batch pos head_index d_head",
@@ -552,7 +552,7 @@ class Attention(nn.Module):
             )
             + self.b_Q
         )  # [batch, pos, head_index, d_head]
-        k = self.hook_k(
+        k = self.k(
             einsum(
                 f"{qkv_einops_string}, head_index d_model d_head \
                 -> batch pos head_index d_head",
@@ -561,7 +561,7 @@ class Attention(nn.Module):
             )
             + self.b_K
         )  # [batch, pos, head_index, d_head]
-        v = self.hook_v(
+        v = self.v(
             einsum(
                 f"{qkv_einops_string}, head_index d_model d_head \
                 -> batch pos head_index d_head",
@@ -626,12 +626,12 @@ class Attention(nn.Module):
         if additive_attention_mask is not None:
             attn_scores += additive_attention_mask
 
-        attn_scores = self.hook_attn_scores(attn_scores)
+        attn_scores = self.attn_scores(attn_scores)
         pattern = F.softmax(attn_scores, dim=-1)
         pattern = torch.where(torch.isnan(pattern), torch.zeros_like(pattern), pattern)
-        pattern = self.hook_pattern(pattern)  # [batch, head_index, query_pos, key_pos]
+        pattern = self.pattern(pattern)  # [batch, head_index, query_pos, key_pos]
         pattern = pattern.to(self.cfg.dtype)
-        z = self.hook_z(
+        z = self.z(
             einsum(
                 "batch key_pos head_index d_head, \
                 batch head_index query_pos key_pos -> \
@@ -656,7 +656,7 @@ class Attention(nn.Module):
         else:
             # Explicitly calculate the attention result so it can be accessed by a hook
             # This is off by default because it can easily eat through your GPU memory.
-            result = self.hook_result(
+            result = self.result(
                 einsum(
                     "batch pos head_index d_head, \
                         head_index d_head d_model -> \
@@ -929,8 +929,8 @@ class MLP(nn.Module):
         )
         self.b_out = nn.Parameter(torch.zeros(self.cfg.d_model, dtype=cfg.dtype))
 
-        self.hook_pre = Nneuron()  # [batch, pos, d_mlp]
-        self.hook_post = Nneuron()  # [batch, pos, d_mlp]
+        # self.hook_pre = Nneuron()  # [batch, pos, d_mlp]
+        # self.hook_post = Nneuron()  # [batch, pos, d_mlp]
 
         if self.cfg.act_fn == "relu":
             self.act_fn = F.relu
@@ -945,7 +945,7 @@ class MLP(nn.Module):
         elif self.cfg.act_fn == "solu_ln":
             self.act_fn = solu
             # Hook taken between activation and layer norm
-            self.hook_mid = Nneuron()  # [batch, pos, d_mlp]
+            # self.hook_mid = Nneuron()  # [batch, pos, d_mlp]
             if self.cfg.normalization_type == "LN":
                 self.ln = LayerNorm(self.cfg, self.cfg.d_mlp)
             else:
@@ -958,15 +958,13 @@ class MLP(nn.Module):
         self, x: Float[torch.Tensor, "batch pos d_model"]
     ) -> Float[torch.Tensor, "batch pos d_model"]:
         # Technically, all these einsums could be done with a single matmul, but this is more readable.
-        pre_act = self.hook_pre(
-            einsum("batch pos d_model, d_model d_mlp -> batch pos d_mlp", x, self.W_in)
-            + self.b_in
-        )  # [batch, pos, d_mlp]
+        pre_act = einsum("batch pos d_model, d_model d_mlp -> batch pos d_mlp", x, self.W_in) + self.b_in  # [batch, pos, d_mlp]
+        
         if not self.cfg.act_fn.endswith("_ln"):
-            post_act = self.hook_post(self.act_fn(pre_act))  # [batch, pos, d_mlp]
+            post_act = self.act_fn(pre_act)  # [batch, pos, d_mlp]
         else:
-            mid_act = self.hook_mid(self.act_fn(pre_act))  # [batch, pos, d_mlp]
-            post_act = self.hook_post(self.ln(mid_act))
+            mid_act = self.act_fn(pre_act) # [batch, pos, d_mlp]
+            post_act = self.ln(mid_act)
         return (
             einsum(
                 "batch pos d_mlp, d_mlp d_model -> batch pos d_model",
@@ -1112,19 +1110,19 @@ class TransformerBlock(nn.Module):
             else:
                 self.mlp = MLP(cfg)
 
-        self.hook_attn_in = Nneuron()  # [batch, pos, n_heads, d_model]
-        self.hook_q_input = Nneuron()  # [batch, pos, n_heads, d_model]
-        self.hook_k_input = Nneuron()  # [batch, pos, n_heads, d_model]
-        self.hook_v_input = Nneuron()  # [batch, pos, n_heads, d_model]
-        self.hook_mlp_in = Nneuron()  # [batch, pos, d_model]
+        # self.hook_attn_in = Nneuron()  # [batch, pos, n_heads, d_model]
+        # self.hook_q_input = Nneuron()  # [batch, pos, n_heads, d_model]
+        # self.hook_k_input = Nneuron()  # [batch, pos, n_heads, d_model]
+        # self.hook_v_input = Nneuron()  # [batch, pos, n_heads, d_model]
+        # self.hook_mlp_in = Nneuron()  # [batch, pos, d_model]
 
-        self.hook_attn_out = Nneuron()  # [batch, pos, d_model]
-        self.hook_mlp_out = Nneuron()  # [batch, pos, d_model]
+        # self.hook_attn_out = Nneuron()  # [batch, pos, d_model]
+        # self.hook_mlp_out = Nneuron()  # [batch, pos, d_model]
 
-        self.hook_resid_pre = Nneuron()  # [batch, pos, d_model]
-        if not self.cfg.attn_only and not self.cfg.parallel_attn_mlp:
-            self.hook_resid_mid = Nneuron()  # [batch, pos, d_model]
-        self.hook_resid_post = Nneuron()  # [batch, pos, d_model]
+        # self.hook_resid_pre = Nneuron()  # [batch, pos, d_model]
+        # if not self.cfg.attn_only and not self.cfg.parallel_attn_mlp:
+        #     self.hook_resid_mid = Nneuron()  # [batch, pos, d_model]
+        # self.hook_resid_post = Nneuron()  # [batch, pos, d_model]
 
     def forward(
         self,
@@ -1146,7 +1144,7 @@ class TransformerBlock(nn.Module):
         Returns:
             _type_: _description_
         """
-        resid_pre = self.hook_resid_pre(resid_pre)  # [batch, pos, d_model]
+        resid_pre = resid_pre # [batch, pos, d_model]
 
         def add_head_dimension(
             tensor: Float[torch.Tensor, "batch pos d_model"],
@@ -1171,66 +1169,43 @@ class TransformerBlock(nn.Module):
         else:
             attn_in = resid_pre
 
-        if self.cfg.use_attn_in:
-            attn_in = self.hook_attn_in(attn_in.clone())
+        # if self.cfg.use_attn_in:
+        #     attn_in = self.hook_attn_in(attn_in.clone())
 
-        if self.cfg.use_split_qkv_input:
-            query_input = self.hook_q_input(attn_in.clone())
-            key_input = self.hook_k_input(attn_in.clone())
-            value_input = self.hook_v_input(attn_in.clone())
-        else:
-            query_input = attn_in
-            key_input = attn_in
-            value_input = attn_in
+        attn_in = attn_in
 
-        attn_out = self.hook_attn_out(
-            # hook the residual stream states that are used to calculate the
-            # queries, keys and values, independently.
-            # Then take the layer norm of these inputs, and pass these to the attention module.
-            self.attn(
-                query_input=self.ln1(query_input)
-                + (0.0 if shortformer_pos_embed is None else shortformer_pos_embed),
-                key_input=self.ln1(key_input)
-                + (0.0 if shortformer_pos_embed is None else shortformer_pos_embed),
-                value_input=self.ln1(value_input),
-                past_kv_cache_entry=past_kv_cache_entry,
-                attention_mask=attention_mask,
-            )
+        # if self.cfg.use_split_qkv_input:
+        #     query_input = self.hook_q_input(attn_in.clone())
+        #     key_input = self.hook_k_input(attn_in.clone())
+        #     value_input = self.hook_v_input(attn_in.clone())
+        # else:
+        query_input = attn_in
+        key_input = attn_in
+        value_input = attn_in
+
+        attn_out = self.attn(
+            query_input=self.ln1(query_input)
+            + (0.0 if shortformer_pos_embed is None else shortformer_pos_embed),
+            key_input=self.ln1(key_input)
+            + (0.0 if shortformer_pos_embed is None else shortformer_pos_embed),
+            value_input=self.ln1(value_input),
+            past_kv_cache_entry=past_kv_cache_entry,
+            attention_mask=attention_mask,
         )  # [batch, pos, d_model]
         if not self.cfg.attn_only and not self.cfg.parallel_attn_mlp:
-            resid_mid = self.hook_resid_mid(
-                resid_pre + attn_out
-            )  # [batch, pos, d_model]
-            mlp_in = (
-                resid_mid
-                if not self.cfg.use_hook_mlp_in
-                else self.hook_mlp_in(resid_mid.clone())
-            )
+            resid_mid = resid_pre + attn_out # [batch, pos, d_model]
+            mlp_in = resid_mid
             normalized_resid_mid = self.ln2(mlp_in)
-            mlp_out = self.hook_mlp_out(
-                self.mlp(normalized_resid_mid)
-            )  # [batch, pos, d_model]
-            resid_post = self.hook_resid_post(
-                resid_mid + mlp_out
-            )  # [batch, pos, d_model]
+            mlp_out = self.mlp(normalized_resid_mid) # [batch, pos, d_model]
+            resid_post = resid_mid + mlp_out # [batch, pos, d_model]
         elif self.cfg.parallel_attn_mlp:
             # Dumb thing done by GPT-J, both MLP and Attn read from resid_pre and write to resid_post, no resid_mid used.
             # In GPT-J, LN1 and LN2 are tied, in GPT-NeoX they aren't.
-            normalized_resid_pre_2 = self.ln2(
-                resid_pre
-                if not self.cfg.use_hook_mlp_in
-                else self.hook_mlp_in(resid_pre.clone())
-            )
-            mlp_out = self.hook_mlp_out(
-                self.mlp(normalized_resid_pre_2)
-            )  # [batch, pos, d_model]
-            resid_post = self.hook_resid_post(
-                resid_pre + attn_out + mlp_out
-            )  # [batch, pos, d_model]
+            normalized_resid_pre_2 = resid_pre
+            mlp_out = self.mlp(normalized_resid_pre_2) # [batch, pos, d_model]
+            resid_post = resid_pre + attn_out + mlp_out # [batch, pos, d_model]
         else:
-            resid_post = self.hook_resid_post(
-                resid_pre + attn_out
-            )  # [batch, pos, d_model]
+            resid_post = resid_pre + attn_out # [batch, pos, d_model]
         return resid_post
 
 
