@@ -294,7 +294,7 @@ class LayerNorm(nn.Module):
 
         # Adds a hook point for the normalisation scale factor
         self.scale_factor = Nneuron()  # [batch, pos, 1]
-        # normalized is on the LN output
+        # Hook_normalized is on the LN output
         self.normalized = Nneuron()  # [batch, pos, length]
 
     def forward(
@@ -477,8 +477,8 @@ class Attention(nn.Module):
             self.hook_attn_input = Nneuron()  # [batch, pos, d_model]
         elif self.cfg.positional_embedding_type == "rotary":
             # Applies a rotation to each two-element chunk of keys and queries pre dot producting to bake in relative position. See HookedTransformerConfig for details
-            self.hook_rot_k = Nneuron()
-            self.hook_rot_q = Nneuron()
+            self.rot_k = Nneuron()
+            self.rot_q = Nneuron()
             sin, cos = self.calculate_sin_cos_rotary(
                 self.cfg.rotary_dim, self.cfg.n_ctx, dtype=self.cfg.dtype
             )
@@ -580,10 +580,10 @@ class Attention(nn.Module):
             kv_cache_pos_offset = 0
 
         if self.cfg.positional_embedding_type == "rotary":
-            q = self.hook_rot_q(
+            q = self.rot_q(
                 self.apply_rotary(q, kv_cache_pos_offset, attention_mask)
             )
-            k = self.hook_rot_k(
+            k = self.rot_k(
                 self.apply_rotary(k, 0, attention_mask)
             )  # keys are cached so no offset
 
@@ -958,13 +958,15 @@ class MLP(nn.Module):
         self, x: Float[torch.Tensor, "batch pos d_model"]
     ) -> Float[torch.Tensor, "batch pos d_model"]:
         # Technically, all these einsums could be done with a single matmul, but this is more readable.
-        pre_act = einsum("batch pos d_model, d_model d_mlp -> batch pos d_mlp", x, self.W_in) + self.b_in  # [batch, pos, d_mlp]
-        
+        pre_act = (
+            einsum("batch pos d_model, d_model d_mlp -> batch pos d_mlp", x, self.W_in)
+            + self.b_in
+        )  # [batch, pos, d_mlp]
         if not self.cfg.act_fn.endswith("_ln"):
-            post_act = self.act_fn(pre_act)  # [batch, pos, d_mlp]
+            post_act = (self.act_fn(pre_act))  # [batch, pos, d_mlp]
         else:
-            mid_act = self.act_fn(pre_act) # [batch, pos, d_mlp]
-            post_act = self.ln(mid_act)
+            mid_act = (self.act_fn(pre_act))  # [batch, pos, d_mlp]
+            post_act = (self.ln(mid_act))
         return (
             einsum(
                 "batch pos d_mlp, d_mlp d_model -> batch pos d_model",
@@ -1120,8 +1122,8 @@ class TransformerBlock(nn.Module):
         # self.hook_mlp_out = Nneuron()  # [batch, pos, d_model]
 
         # self.hook_resid_pre = Nneuron()  # [batch, pos, d_model]
-        # if not self.cfg.attn_only and not self.cfg.parallel_attn_mlp:
-        #     self.hook_resid_mid = Nneuron()  # [batch, pos, d_model]
+        if not self.cfg.attn_only and not self.cfg.parallel_attn_mlp:
+            self.hook_resid_mid = Nneuron()  # [batch, pos, d_model]
         # self.hook_resid_post = Nneuron()  # [batch, pos, d_model]
 
     def forward(
@@ -1144,7 +1146,7 @@ class TransformerBlock(nn.Module):
         Returns:
             _type_: _description_
         """
-        resid_pre = resid_pre # [batch, pos, d_model]
+        resid_pre = (resid_pre)  # [batch, pos, d_model]
 
         def add_head_dimension(
             tensor: Float[torch.Tensor, "batch pos d_model"],
@@ -1170,9 +1172,7 @@ class TransformerBlock(nn.Module):
             attn_in = resid_pre
 
         # if self.cfg.use_attn_in:
-        #     attn_in = self.hook_attn_in(attn_in.clone())
-
-        attn_in = attn_in
+        #     attn_in = (attn_in.clone())
 
         # if self.cfg.use_split_qkv_input:
         #     query_input = self.hook_q_input(attn_in.clone())
@@ -1183,29 +1183,54 @@ class TransformerBlock(nn.Module):
         key_input = attn_in
         value_input = attn_in
 
-        attn_out = self.attn(
-            query_input=self.ln1(query_input)
-            + (0.0 if shortformer_pos_embed is None else shortformer_pos_embed),
-            key_input=self.ln1(key_input)
-            + (0.0 if shortformer_pos_embed is None else shortformer_pos_embed),
-            value_input=self.ln1(value_input),
-            past_kv_cache_entry=past_kv_cache_entry,
-            attention_mask=attention_mask,
+        attn_out = (
+            # hook the residual stream states that are used to calculate the
+            # queries, keys and values, independently.
+            # Then take the layer norm of these inputs, and pass these to the attention module.
+            self.attn(
+                query_input=self.ln1(query_input)
+                + (0.0 if shortformer_pos_embed is None else shortformer_pos_embed),
+                key_input=self.ln1(key_input)
+                + (0.0 if shortformer_pos_embed is None else shortformer_pos_embed),
+                value_input=self.ln1(value_input),
+                past_kv_cache_entry=past_kv_cache_entry,
+                attention_mask=attention_mask,
+            )
         )  # [batch, pos, d_model]
         if not self.cfg.attn_only and not self.cfg.parallel_attn_mlp:
-            resid_mid = resid_pre + attn_out # [batch, pos, d_model]
-            mlp_in = resid_mid
+            resid_mid = self.hook_resid_mid(
+                resid_pre + attn_out
+            )  # [batch, pos, d_model]
+            mlp_in = (
+                resid_mid
+                if not self.cfg.use_hook_mlp_in
+                else (resid_mid.clone())
+            )
             normalized_resid_mid = self.ln2(mlp_in)
-            mlp_out = self.mlp(normalized_resid_mid) # [batch, pos, d_model]
-            resid_post = resid_mid + mlp_out # [batch, pos, d_model]
+            mlp_out = (
+                self.mlp(normalized_resid_mid)
+            )  # [batch, pos, d_model]
+            resid_post = (
+                resid_mid + mlp_out
+            )  # [batch, pos, d_model]
         elif self.cfg.parallel_attn_mlp:
             # Dumb thing done by GPT-J, both MLP and Attn read from resid_pre and write to resid_post, no resid_mid used.
             # In GPT-J, LN1 and LN2 are tied, in GPT-NeoX they aren't.
-            normalized_resid_pre_2 = resid_pre
-            mlp_out = self.mlp(normalized_resid_pre_2) # [batch, pos, d_model]
-            resid_post = resid_pre + attn_out + mlp_out # [batch, pos, d_model]
+            normalized_resid_pre_2 = self.ln2(
+                resid_pre
+                if not self.cfg.use_hook_mlp_in
+                else (resid_pre.clone())
+            )
+            mlp_out = (
+                self.mlp(normalized_resid_pre_2)
+            )  # [batch, pos, d_model]
+            resid_post = (
+                resid_pre + attn_out + mlp_out
+            )  # [batch, pos, d_model]
         else:
-            resid_post = resid_pre + attn_out # [batch, pos, d_model]
+            resid_post = (
+                resid_pre + attn_out
+            )  # [batch, pos, d_model]
         return resid_post
 
 
@@ -1233,7 +1258,7 @@ class BertBlock(nn.Module):
         self.hook_resid_pre = Nneuron()  # [batch, pos, d_model]
         self.hook_resid_mid = Nneuron()  # [batch, pos, d_model]
         self.hook_resid_post = Nneuron()  # [batch, pos, d_model]
-        self.hook_normalized_resid_post = Nneuron()  # [batch, pos, d_model]
+        self.normalized_resid_post = Nneuron()  # [batch, pos, d_model]
 
     def forward(
         self,
@@ -1277,6 +1302,6 @@ class BertBlock(nn.Module):
         normalized_resid_mid = self.ln1(mlp_in)
         mlp_out = self.hook_mlp_out(self.mlp(normalized_resid_mid))
         resid_post = self.hook_resid_post(normalized_resid_mid + mlp_out)
-        normalized_resid_post = self.hook_normalized_resid_post(self.ln2(resid_post))
+        normalized_resid_post = self.normalized_resid_post(self.ln2(resid_post))
 
         return normalized_resid_post
