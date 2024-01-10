@@ -1,0 +1,21 @@
+I am trying to write tasks for a machine learning system.
+
+Here is the format:
+
+answers = ["microwave", "countertop", "sink basin", "shelf", "toaster", "dining table", "cabinet", "drawer", "stove burner", "garbage can", "coffee machine", "fridge"]
+
+"""You are in the middle of a room. Looking quickly around you, you see a microwave, countertop, sink basin, fridge, shelf, toaster, dining table, cabinet, drawer, stove burner, garbage can, and coffee machine.
+Your task is to: put lettuce on the dining table.
+> go to fridge"""
+
+Write a tasks and actions for each item in the kitchen. 
+
+In the above situation, the task is
+
+Your task is to: put a clean lettuce on dining table.
+
+and the action is 
+
+> go to fridge"""
+
+write the task so that the task location isn't specified in the task
