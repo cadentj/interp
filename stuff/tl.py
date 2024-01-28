@@ -45,3 +45,29 @@ model = LanguageModel(gpt2_small, tokenizer=ground_model.tokenizer, device_map="
 
 with model.invoke("test") as invoker:
     pass
+
+
+
+
+
+# %%
+
+def __repr__(self):
+        """
+        Some __repr__ overrides to make the model more readable.
+        """
+        lines = [self.__class__.__name__ + '(']
+        for name, module in self.named_children():
+
+            module_str = repr(module)
+            
+            module_str = module_str.split('\n')
+            
+            module_str = [line for line in module_str if ('_input' not in line and '_output' not in line)]
+            module_str = [line.replace('hook_', '') for line in module_str]
+
+            module_str = '\n'.join(module_str)
+
+            lines.append(f'  ({name}): {module_str}')
+
+        return '\n'.join(lines) + '\n)'

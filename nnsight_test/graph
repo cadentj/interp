@@ -1,0 +1,860 @@
+// The Round Table
+digraph "round-table" {
+	module_0 [label=module color=green4]
+	argument_0 [label=argument color=green]
+	0 [label="key=\"input_ids\"" color=grey shape=box]
+	0 -> argument_0
+	argument_1 [label=argument color=green]
+	1 [label="key=\"return_dict\"" color=grey shape=box]
+	1 -> argument_1
+	fetch_attr_0 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_0
+	2 [label="\"config\"" color=grey shape=box]
+	2 -> fetch_attr_0
+	fetch_attr_1 [label=fetch_attr color=black]
+	fetch_attr_0 [label=fetch_attr color=black]
+	fetch_attr_0 -> fetch_attr_1
+	3 [label="\"output_attentions\"" color=grey shape=box]
+	3 -> fetch_attr_1
+	fetch_attr_2 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_2
+	4 [label="\"config\"" color=grey shape=box]
+	4 -> fetch_attr_2
+	fetch_attr_3 [label=fetch_attr color=black]
+	fetch_attr_2 [label=fetch_attr color=black]
+	fetch_attr_2 -> fetch_attr_3
+	5 [label="\"output_hidden_states\"" color=grey shape=box]
+	5 -> fetch_attr_3
+	fetch_attr_4 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_4
+	6 [label="\"config\"" color=grey shape=box]
+	6 -> fetch_attr_4
+	fetch_attr_5 [label=fetch_attr color=black]
+	fetch_attr_4 [label=fetch_attr color=black]
+	fetch_attr_4 -> fetch_attr_5
+	7 [label="\"use_cache\"" color=grey shape=box]
+	7 -> fetch_attr_5
+	fetch_attr_6 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_6
+	8 [label="\"warn_if_padding_and_no_attention_mask\"" color=grey shape=box]
+	8 -> fetch_attr_6
+	fetch_attr_7 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_7
+	9 [label="\"config\"" color=grey shape=box]
+	9 -> fetch_attr_7
+	fetch_attr_8 [label=fetch_attr color=black]
+	fetch_attr_7 [label=fetch_attr color=black]
+	fetch_attr_7 -> fetch_attr_8
+	10 [label="\"pad_token_id\"" color=grey shape=box]
+	10 -> fetch_attr_8
+	fetch_attr_9 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_9
+	11 [label="\"config\"" color=grey shape=box]
+	11 -> fetch_attr_9
+	fetch_attr_10 [label=fetch_attr color=black]
+	fetch_attr_9 [label=fetch_attr color=black]
+	fetch_attr_9 -> fetch_attr_10
+	12 [label="\"pad_token_id\"" color=grey shape=box]
+	12 -> fetch_attr_10
+	getitem_0 [label=getitem color=black]
+	argument_0 [label=argument color=green]
+	argument_0 -> getitem_0
+	13 [label="(slice(None, None, None), [-1, 0])" color=grey shape=box]
+	13 -> getitem_0
+	getitem_1 [label=getitem color=black]
+	getitem_0 [label=getitem color=black]
+	getitem_0 -> getitem_1
+	14 [label=0 color=grey shape=box]
+	14 -> getitem_1
+	fetch_attr_11 [label=fetch_attr color=black]
+	argument_0 [label=argument color=green]
+	argument_0 -> fetch_attr_11
+	15 [label="\"size\"" color=grey shape=box]
+	15 -> fetch_attr_11
+	proxy_call_0 [label=proxy_call color=black]
+	fetch_attr_11 [label=fetch_attr color=black]
+	fetch_attr_11 -> proxy_call_0
+	fetch_attr_12 [label=fetch_attr color=black]
+	argument_0 [label=argument color=green]
+	argument_0 -> fetch_attr_12
+	16 [label="\"view\"" color=grey shape=box]
+	16 -> fetch_attr_12
+	getitem_2 [label=getitem color=black]
+	proxy_call_0 [label=proxy_call color=black]
+	proxy_call_0 -> getitem_2
+	17 [label=-1 color=grey shape=box]
+	17 -> getitem_2
+	proxy_call_1 [label=proxy_call color=black]
+	fetch_attr_12 [label=fetch_attr color=black]
+	fetch_attr_12 -> proxy_call_1
+	18 [label=-1 color=grey shape=box]
+	18 -> proxy_call_1
+	getitem_2 [label=getitem color=black]
+	getitem_2 -> proxy_call_1
+	fetch_attr_13 [label=fetch_attr color=black]
+	proxy_call_1 [label=proxy_call color=black]
+	proxy_call_1 -> fetch_attr_13
+	19 [label="\"shape\"" color=grey shape=box]
+	19 -> fetch_attr_13
+	getitem_3 [label=getitem color=black]
+	fetch_attr_13 [label=fetch_attr color=black]
+	fetch_attr_13 -> getitem_3
+	20 [label=0 color=grey shape=box]
+	20 -> getitem_3
+	fetch_attr_14 [label=fetch_attr color=black]
+	proxy_call_1 [label=proxy_call color=black]
+	proxy_call_1 -> fetch_attr_14
+	21 [label="\"device\"" color=grey shape=box]
+	21 -> fetch_attr_14
+	fetch_attr_15 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_15
+	22 [label="\"h\"" color=grey shape=box]
+	22 -> fetch_attr_15
+	len_0 [label=len color=black]
+	fetch_attr_15 [label=fetch_attr color=black]
+	fetch_attr_15 -> len_0
+	getitem_4 [label=getitem color=black]
+	proxy_call_0 [label=proxy_call color=black]
+	proxy_call_0 -> getitem_4
+	23 [label=-1 color=grey shape=box]
+	23 -> getitem_4
+	add_0 [label=add color=black]
+	getitem_4 [label=getitem color=black]
+	getitem_4 -> add_0
+	24 [label=0 color=grey shape=box]
+	24 -> add_0
+	arange_0 [label=arange color=black]
+	25 [label=0 color=grey shape=box]
+	25 -> arange_0
+	add_0 [label=add color=black]
+	add_0 -> arange_0
+	26 [label="dtype=torch.int64" color=grey shape=box]
+	26 -> arange_0
+	fetch_attr_14 [label="device=fetch_attr" color=black]
+	fetch_attr_14 -> arange_0
+	fetch_attr_16 [label=fetch_attr color=black]
+	arange_0 [label=arange color=black]
+	arange_0 -> fetch_attr_16
+	27 [label="\"unsqueeze\"" color=grey shape=box]
+	27 -> fetch_attr_16
+	proxy_call_2 [label=proxy_call color=black]
+	fetch_attr_16 [label=fetch_attr color=black]
+	fetch_attr_16 -> proxy_call_2
+	28 [label=0 color=grey shape=box]
+	28 -> proxy_call_2
+	fetch_attr_17 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_17
+	29 [label="\"config\"" color=grey shape=box]
+	29 -> fetch_attr_17
+	fetch_attr_18 [label=fetch_attr color=black]
+	fetch_attr_17 [label=fetch_attr color=black]
+	fetch_attr_17 -> fetch_attr_18
+	30 [label="\"add_cross_attention\"" color=grey shape=box]
+	30 -> fetch_attr_18
+	fetch_attr_19 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_19
+	31 [label="\"get_head_mask\"" color=grey shape=box]
+	31 -> fetch_attr_19
+	fetch_attr_20 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_20
+	32 [label="\"config\"" color=grey shape=box]
+	32 -> fetch_attr_20
+	fetch_attr_21 [label=fetch_attr color=black]
+	fetch_attr_20 [label=fetch_attr color=black]
+	fetch_attr_20 -> fetch_attr_21
+	33 [label="\"n_layer\"" color=grey shape=box]
+	33 -> fetch_attr_21
+	mul_0 [label=mul color=black]
+	34 [label="[None]" color=grey shape=box]
+	34 -> mul_0
+	fetch_attr_21 [label=fetch_attr color=black]
+	fetch_attr_21 -> mul_0
+	fetch_attr_22 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_22
+	35 [label="\"wte\"" color=grey shape=box]
+	35 -> fetch_attr_22
+	proxy_call_3 [label=proxy_call color=black]
+	fetch_attr_22 [label=fetch_attr color=black]
+	fetch_attr_22 -> proxy_call_3
+	proxy_call_1 [label=proxy_call color=black]
+	proxy_call_1 -> proxy_call_3
+	fetch_attr_23 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_23
+	36 [label="\"wpe\"" color=grey shape=box]
+	36 -> fetch_attr_23
+	proxy_call_4 [label=proxy_call color=black]
+	fetch_attr_23 [label=fetch_attr color=black]
+	fetch_attr_23 -> proxy_call_4
+	proxy_call_2 [label=proxy_call color=black]
+	proxy_call_2 -> proxy_call_4
+	add_1 [label=add color=black]
+	proxy_call_3 [label=proxy_call color=black]
+	proxy_call_3 -> add_1
+	proxy_call_4 [label=proxy_call color=black]
+	proxy_call_4 -> add_1
+	fetch_attr_24 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_24
+	37 [label="\"drop\"" color=grey shape=box]
+	37 -> fetch_attr_24
+	proxy_call_5 [label=proxy_call color=black]
+	fetch_attr_24 [label=fetch_attr color=black]
+	fetch_attr_24 -> proxy_call_5
+	add_1 [label=add color=black]
+	add_1 -> proxy_call_5
+	getitem_5 [label=getitem color=black]
+	proxy_call_0 [label=proxy_call color=black]
+	proxy_call_0 -> getitem_5
+	38 [label="slice(1, None, None)" color=grey shape=box]
+	38 -> getitem_5
+	add_2 [label=add color=black]
+	39 [label="(-1,)" color=grey shape=box]
+	39 -> add_2
+	getitem_5 [label=getitem color=black]
+	getitem_5 -> add_2
+	fetch_attr_25 [label=fetch_attr color=black]
+	proxy_call_5 [label=proxy_call color=black]
+	proxy_call_5 -> fetch_attr_25
+	40 [label="\"size\"" color=grey shape=box]
+	40 -> fetch_attr_25
+	proxy_call_6 [label=proxy_call color=black]
+	fetch_attr_25 [label=fetch_attr color=black]
+	fetch_attr_25 -> proxy_call_6
+	41 [label=-1 color=grey shape=box]
+	41 -> proxy_call_6
+	add_3 [label=add color=black]
+	add_2 [label=add color=black]
+	add_2 -> add_3
+	42 [label="(<nnsight.tracing.Node.Node object at 0x7fc4c0043280>,)" color=grey shape=box]
+	42 -> add_3
+	fetch_attr_26 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_26
+	43 [label="\"gradient_checkpointing\"" color=grey shape=box]
+	43 -> fetch_attr_26
+	fetch_attr_27 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_27
+	44 [label="\"h\"" color=grey shape=box]
+	44 -> fetch_attr_27
+	getitem_6 [label=getitem color=black]
+	fetch_attr_27 [label=fetch_attr color=black]
+	fetch_attr_27 -> getitem_6
+	45 [label=0 color=grey shape=box]
+	45 -> getitem_6
+	fetch_attr_28 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_28
+	46 [label="\"model_parallel\"" color=grey shape=box]
+	46 -> fetch_attr_28
+	fetch_attr_29 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_29
+	47 [label="\"gradient_checkpointing\"" color=grey shape=box]
+	47 -> fetch_attr_29
+	getitem_7 [label=getitem color=black]
+	mul_0 [label=mul color=black]
+	mul_0 -> getitem_7
+	48 [label=0 color=grey shape=box]
+	48 -> getitem_7
+	proxy_call_7 [label=proxy_call color=black]
+	getitem_6 [label=getitem color=black]
+	getitem_6 -> proxy_call_7
+	proxy_call_5 [label=proxy_call color=black]
+	proxy_call_5 -> proxy_call_7
+	49 [label="layer_past=None" color=grey shape=box]
+	49 -> proxy_call_7
+	50 [label="attention_mask=None" color=grey shape=box]
+	50 -> proxy_call_7
+	getitem_7 [label="head_mask=getitem" color=black]
+	getitem_7 -> proxy_call_7
+	51 [label="encoder_hidden_states=None" color=grey shape=box]
+	51 -> proxy_call_7
+	52 [label="encoder_attention_mask=None" color=grey shape=box]
+	52 -> proxy_call_7
+	fetch_attr_5 [label="use_cache=fetch_attr" color=black]
+	fetch_attr_5 -> proxy_call_7
+	fetch_attr_1 [label="output_attentions=fetch_attr" color=black]
+	fetch_attr_1 -> proxy_call_7
+	getitem_8 [label=getitem color=black]
+	proxy_call_7 [label=proxy_call color=black]
+	proxy_call_7 -> getitem_8
+	53 [label=0 color=grey shape=box]
+	53 -> getitem_8
+	fetch_attr_30 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_30
+	54 [label="\"model_parallel\"" color=grey shape=box]
+	54 -> fetch_attr_30
+	getitem_9 [label=getitem color=black]
+	fetch_attr_27 [label=fetch_attr color=black]
+	fetch_attr_27 -> getitem_9
+	55 [label=1 color=grey shape=box]
+	55 -> getitem_9
+	fetch_attr_31 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_31
+	56 [label="\"model_parallel\"" color=grey shape=box]
+	56 -> fetch_attr_31
+	fetch_attr_32 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_32
+	57 [label="\"gradient_checkpointing\"" color=grey shape=box]
+	57 -> fetch_attr_32
+	getitem_10 [label=getitem color=black]
+	mul_0 [label=mul color=black]
+	mul_0 -> getitem_10
+	58 [label=1 color=grey shape=box]
+	58 -> getitem_10
+	proxy_call_8 [label=proxy_call color=black]
+	getitem_9 [label=getitem color=black]
+	getitem_9 -> proxy_call_8
+	getitem_8 [label=getitem color=black]
+	getitem_8 -> proxy_call_8
+	59 [label="layer_past=None" color=grey shape=box]
+	59 -> proxy_call_8
+	60 [label="attention_mask=None" color=grey shape=box]
+	60 -> proxy_call_8
+	getitem_10 [label="head_mask=getitem" color=black]
+	getitem_10 -> proxy_call_8
+	61 [label="encoder_hidden_states=None" color=grey shape=box]
+	61 -> proxy_call_8
+	62 [label="encoder_attention_mask=None" color=grey shape=box]
+	62 -> proxy_call_8
+	fetch_attr_5 [label="use_cache=fetch_attr" color=black]
+	fetch_attr_5 -> proxy_call_8
+	fetch_attr_1 [label="output_attentions=fetch_attr" color=black]
+	fetch_attr_1 -> proxy_call_8
+	getitem_11 [label=getitem color=black]
+	proxy_call_8 [label=proxy_call color=black]
+	proxy_call_8 -> getitem_11
+	63 [label=0 color=grey shape=box]
+	63 -> getitem_11
+	fetch_attr_33 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_33
+	64 [label="\"model_parallel\"" color=grey shape=box]
+	64 -> fetch_attr_33
+	getitem_12 [label=getitem color=black]
+	fetch_attr_27 [label=fetch_attr color=black]
+	fetch_attr_27 -> getitem_12
+	65 [label=2 color=grey shape=box]
+	65 -> getitem_12
+	fetch_attr_34 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_34
+	66 [label="\"model_parallel\"" color=grey shape=box]
+	66 -> fetch_attr_34
+	fetch_attr_35 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_35
+	67 [label="\"gradient_checkpointing\"" color=grey shape=box]
+	67 -> fetch_attr_35
+	getitem_13 [label=getitem color=black]
+	mul_0 [label=mul color=black]
+	mul_0 -> getitem_13
+	68 [label=2 color=grey shape=box]
+	68 -> getitem_13
+	proxy_call_9 [label=proxy_call color=black]
+	getitem_12 [label=getitem color=black]
+	getitem_12 -> proxy_call_9
+	getitem_11 [label=getitem color=black]
+	getitem_11 -> proxy_call_9
+	69 [label="layer_past=None" color=grey shape=box]
+	69 -> proxy_call_9
+	70 [label="attention_mask=None" color=grey shape=box]
+	70 -> proxy_call_9
+	getitem_13 [label="head_mask=getitem" color=black]
+	getitem_13 -> proxy_call_9
+	71 [label="encoder_hidden_states=None" color=grey shape=box]
+	71 -> proxy_call_9
+	72 [label="encoder_attention_mask=None" color=grey shape=box]
+	72 -> proxy_call_9
+	fetch_attr_5 [label="use_cache=fetch_attr" color=black]
+	fetch_attr_5 -> proxy_call_9
+	fetch_attr_1 [label="output_attentions=fetch_attr" color=black]
+	fetch_attr_1 -> proxy_call_9
+	getitem_14 [label=getitem color=black]
+	proxy_call_9 [label=proxy_call color=black]
+	proxy_call_9 -> getitem_14
+	73 [label=0 color=grey shape=box]
+	73 -> getitem_14
+	fetch_attr_36 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_36
+	74 [label="\"model_parallel\"" color=grey shape=box]
+	74 -> fetch_attr_36
+	getitem_15 [label=getitem color=black]
+	fetch_attr_27 [label=fetch_attr color=black]
+	fetch_attr_27 -> getitem_15
+	75 [label=3 color=grey shape=box]
+	75 -> getitem_15
+	fetch_attr_37 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_37
+	76 [label="\"model_parallel\"" color=grey shape=box]
+	76 -> fetch_attr_37
+	fetch_attr_38 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_38
+	77 [label="\"gradient_checkpointing\"" color=grey shape=box]
+	77 -> fetch_attr_38
+	getitem_16 [label=getitem color=black]
+	mul_0 [label=mul color=black]
+	mul_0 -> getitem_16
+	78 [label=3 color=grey shape=box]
+	78 -> getitem_16
+	proxy_call_10 [label=proxy_call color=black]
+	getitem_15 [label=getitem color=black]
+	getitem_15 -> proxy_call_10
+	getitem_14 [label=getitem color=black]
+	getitem_14 -> proxy_call_10
+	79 [label="layer_past=None" color=grey shape=box]
+	79 -> proxy_call_10
+	80 [label="attention_mask=None" color=grey shape=box]
+	80 -> proxy_call_10
+	getitem_16 [label="head_mask=getitem" color=black]
+	getitem_16 -> proxy_call_10
+	81 [label="encoder_hidden_states=None" color=grey shape=box]
+	81 -> proxy_call_10
+	82 [label="encoder_attention_mask=None" color=grey shape=box]
+	82 -> proxy_call_10
+	fetch_attr_5 [label="use_cache=fetch_attr" color=black]
+	fetch_attr_5 -> proxy_call_10
+	fetch_attr_1 [label="output_attentions=fetch_attr" color=black]
+	fetch_attr_1 -> proxy_call_10
+	getitem_17 [label=getitem color=black]
+	proxy_call_10 [label=proxy_call color=black]
+	proxy_call_10 -> getitem_17
+	83 [label=0 color=grey shape=box]
+	83 -> getitem_17
+	fetch_attr_39 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_39
+	84 [label="\"model_parallel\"" color=grey shape=box]
+	84 -> fetch_attr_39
+	getitem_18 [label=getitem color=black]
+	fetch_attr_27 [label=fetch_attr color=black]
+	fetch_attr_27 -> getitem_18
+	85 [label=4 color=grey shape=box]
+	85 -> getitem_18
+	fetch_attr_40 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_40
+	86 [label="\"model_parallel\"" color=grey shape=box]
+	86 -> fetch_attr_40
+	fetch_attr_41 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_41
+	87 [label="\"gradient_checkpointing\"" color=grey shape=box]
+	87 -> fetch_attr_41
+	getitem_19 [label=getitem color=black]
+	mul_0 [label=mul color=black]
+	mul_0 -> getitem_19
+	88 [label=4 color=grey shape=box]
+	88 -> getitem_19
+	proxy_call_11 [label=proxy_call color=black]
+	getitem_18 [label=getitem color=black]
+	getitem_18 -> proxy_call_11
+	getitem_17 [label=getitem color=black]
+	getitem_17 -> proxy_call_11
+	89 [label="layer_past=None" color=grey shape=box]
+	89 -> proxy_call_11
+	90 [label="attention_mask=None" color=grey shape=box]
+	90 -> proxy_call_11
+	getitem_19 [label="head_mask=getitem" color=black]
+	getitem_19 -> proxy_call_11
+	91 [label="encoder_hidden_states=None" color=grey shape=box]
+	91 -> proxy_call_11
+	92 [label="encoder_attention_mask=None" color=grey shape=box]
+	92 -> proxy_call_11
+	fetch_attr_5 [label="use_cache=fetch_attr" color=black]
+	fetch_attr_5 -> proxy_call_11
+	fetch_attr_1 [label="output_attentions=fetch_attr" color=black]
+	fetch_attr_1 -> proxy_call_11
+	getitem_20 [label=getitem color=black]
+	proxy_call_11 [label=proxy_call color=black]
+	proxy_call_11 -> getitem_20
+	93 [label=0 color=grey shape=box]
+	93 -> getitem_20
+	fetch_attr_42 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_42
+	94 [label="\"model_parallel\"" color=grey shape=box]
+	94 -> fetch_attr_42
+	getitem_21 [label=getitem color=black]
+	fetch_attr_27 [label=fetch_attr color=black]
+	fetch_attr_27 -> getitem_21
+	95 [label=5 color=grey shape=box]
+	95 -> getitem_21
+	fetch_attr_43 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_43
+	96 [label="\"model_parallel\"" color=grey shape=box]
+	96 -> fetch_attr_43
+	fetch_attr_44 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_44
+	97 [label="\"gradient_checkpointing\"" color=grey shape=box]
+	97 -> fetch_attr_44
+	getitem_22 [label=getitem color=black]
+	mul_0 [label=mul color=black]
+	mul_0 -> getitem_22
+	98 [label=5 color=grey shape=box]
+	98 -> getitem_22
+	proxy_call_12 [label=proxy_call color=black]
+	getitem_21 [label=getitem color=black]
+	getitem_21 -> proxy_call_12
+	getitem_20 [label=getitem color=black]
+	getitem_20 -> proxy_call_12
+	99 [label="layer_past=None" color=grey shape=box]
+	99 -> proxy_call_12
+	100 [label="attention_mask=None" color=grey shape=box]
+	100 -> proxy_call_12
+	getitem_22 [label="head_mask=getitem" color=black]
+	getitem_22 -> proxy_call_12
+	101 [label="encoder_hidden_states=None" color=grey shape=box]
+	101 -> proxy_call_12
+	102 [label="encoder_attention_mask=None" color=grey shape=box]
+	102 -> proxy_call_12
+	fetch_attr_5 [label="use_cache=fetch_attr" color=black]
+	fetch_attr_5 -> proxy_call_12
+	fetch_attr_1 [label="output_attentions=fetch_attr" color=black]
+	fetch_attr_1 -> proxy_call_12
+	getitem_23 [label=getitem color=black]
+	proxy_call_12 [label=proxy_call color=black]
+	proxy_call_12 -> getitem_23
+	103 [label=0 color=grey shape=box]
+	103 -> getitem_23
+	fetch_attr_45 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_45
+	104 [label="\"model_parallel\"" color=grey shape=box]
+	104 -> fetch_attr_45
+	getitem_24 [label=getitem color=black]
+	fetch_attr_27 [label=fetch_attr color=black]
+	fetch_attr_27 -> getitem_24
+	105 [label=6 color=grey shape=box]
+	105 -> getitem_24
+	fetch_attr_46 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_46
+	106 [label="\"model_parallel\"" color=grey shape=box]
+	106 -> fetch_attr_46
+	fetch_attr_47 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_47
+	107 [label="\"gradient_checkpointing\"" color=grey shape=box]
+	107 -> fetch_attr_47
+	getitem_25 [label=getitem color=black]
+	mul_0 [label=mul color=black]
+	mul_0 -> getitem_25
+	108 [label=6 color=grey shape=box]
+	108 -> getitem_25
+	proxy_call_13 [label=proxy_call color=black]
+	getitem_24 [label=getitem color=black]
+	getitem_24 -> proxy_call_13
+	getitem_23 [label=getitem color=black]
+	getitem_23 -> proxy_call_13
+	109 [label="layer_past=None" color=grey shape=box]
+	109 -> proxy_call_13
+	110 [label="attention_mask=None" color=grey shape=box]
+	110 -> proxy_call_13
+	getitem_25 [label="head_mask=getitem" color=black]
+	getitem_25 -> proxy_call_13
+	111 [label="encoder_hidden_states=None" color=grey shape=box]
+	111 -> proxy_call_13
+	112 [label="encoder_attention_mask=None" color=grey shape=box]
+	112 -> proxy_call_13
+	fetch_attr_5 [label="use_cache=fetch_attr" color=black]
+	fetch_attr_5 -> proxy_call_13
+	fetch_attr_1 [label="output_attentions=fetch_attr" color=black]
+	fetch_attr_1 -> proxy_call_13
+	getitem_26 [label=getitem color=black]
+	proxy_call_13 [label=proxy_call color=black]
+	proxy_call_13 -> getitem_26
+	113 [label=0 color=grey shape=box]
+	113 -> getitem_26
+	fetch_attr_48 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_48
+	114 [label="\"model_parallel\"" color=grey shape=box]
+	114 -> fetch_attr_48
+	getitem_27 [label=getitem color=black]
+	fetch_attr_27 [label=fetch_attr color=black]
+	fetch_attr_27 -> getitem_27
+	115 [label=7 color=grey shape=box]
+	115 -> getitem_27
+	fetch_attr_49 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_49
+	116 [label="\"model_parallel\"" color=grey shape=box]
+	116 -> fetch_attr_49
+	fetch_attr_50 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_50
+	117 [label="\"gradient_checkpointing\"" color=grey shape=box]
+	117 -> fetch_attr_50
+	getitem_28 [label=getitem color=black]
+	mul_0 [label=mul color=black]
+	mul_0 -> getitem_28
+	118 [label=7 color=grey shape=box]
+	118 -> getitem_28
+	proxy_call_14 [label=proxy_call color=black]
+	getitem_27 [label=getitem color=black]
+	getitem_27 -> proxy_call_14
+	getitem_26 [label=getitem color=black]
+	getitem_26 -> proxy_call_14
+	119 [label="layer_past=None" color=grey shape=box]
+	119 -> proxy_call_14
+	120 [label="attention_mask=None" color=grey shape=box]
+	120 -> proxy_call_14
+	getitem_28 [label="head_mask=getitem" color=black]
+	getitem_28 -> proxy_call_14
+	121 [label="encoder_hidden_states=None" color=grey shape=box]
+	121 -> proxy_call_14
+	122 [label="encoder_attention_mask=None" color=grey shape=box]
+	122 -> proxy_call_14
+	fetch_attr_5 [label="use_cache=fetch_attr" color=black]
+	fetch_attr_5 -> proxy_call_14
+	fetch_attr_1 [label="output_attentions=fetch_attr" color=black]
+	fetch_attr_1 -> proxy_call_14
+	getitem_29 [label=getitem color=black]
+	proxy_call_14 [label=proxy_call color=black]
+	proxy_call_14 -> getitem_29
+	123 [label=0 color=grey shape=box]
+	123 -> getitem_29
+	fetch_attr_51 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_51
+	124 [label="\"model_parallel\"" color=grey shape=box]
+	124 -> fetch_attr_51
+	getitem_30 [label=getitem color=black]
+	fetch_attr_27 [label=fetch_attr color=black]
+	fetch_attr_27 -> getitem_30
+	125 [label=8 color=grey shape=box]
+	125 -> getitem_30
+	fetch_attr_52 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_52
+	126 [label="\"model_parallel\"" color=grey shape=box]
+	126 -> fetch_attr_52
+	fetch_attr_53 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_53
+	127 [label="\"gradient_checkpointing\"" color=grey shape=box]
+	127 -> fetch_attr_53
+	getitem_31 [label=getitem color=black]
+	mul_0 [label=mul color=black]
+	mul_0 -> getitem_31
+	128 [label=8 color=grey shape=box]
+	128 -> getitem_31
+	proxy_call_15 [label=proxy_call color=black]
+	getitem_30 [label=getitem color=black]
+	getitem_30 -> proxy_call_15
+	getitem_29 [label=getitem color=black]
+	getitem_29 -> proxy_call_15
+	129 [label="layer_past=None" color=grey shape=box]
+	129 -> proxy_call_15
+	130 [label="attention_mask=None" color=grey shape=box]
+	130 -> proxy_call_15
+	getitem_31 [label="head_mask=getitem" color=black]
+	getitem_31 -> proxy_call_15
+	131 [label="encoder_hidden_states=None" color=grey shape=box]
+	131 -> proxy_call_15
+	132 [label="encoder_attention_mask=None" color=grey shape=box]
+	132 -> proxy_call_15
+	fetch_attr_5 [label="use_cache=fetch_attr" color=black]
+	fetch_attr_5 -> proxy_call_15
+	fetch_attr_1 [label="output_attentions=fetch_attr" color=black]
+	fetch_attr_1 -> proxy_call_15
+	getitem_32 [label=getitem color=black]
+	proxy_call_15 [label=proxy_call color=black]
+	proxy_call_15 -> getitem_32
+	133 [label=0 color=grey shape=box]
+	133 -> getitem_32
+	fetch_attr_54 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_54
+	134 [label="\"model_parallel\"" color=grey shape=box]
+	134 -> fetch_attr_54
+	getitem_33 [label=getitem color=black]
+	fetch_attr_27 [label=fetch_attr color=black]
+	fetch_attr_27 -> getitem_33
+	135 [label=9 color=grey shape=box]
+	135 -> getitem_33
+	fetch_attr_55 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_55
+	136 [label="\"model_parallel\"" color=grey shape=box]
+	136 -> fetch_attr_55
+	fetch_attr_56 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_56
+	137 [label="\"gradient_checkpointing\"" color=grey shape=box]
+	137 -> fetch_attr_56
+	getitem_34 [label=getitem color=black]
+	mul_0 [label=mul color=black]
+	mul_0 -> getitem_34
+	138 [label=9 color=grey shape=box]
+	138 -> getitem_34
+	proxy_call_16 [label=proxy_call color=black]
+	getitem_33 [label=getitem color=black]
+	getitem_33 -> proxy_call_16
+	getitem_32 [label=getitem color=black]
+	getitem_32 -> proxy_call_16
+	139 [label="layer_past=None" color=grey shape=box]
+	139 -> proxy_call_16
+	140 [label="attention_mask=None" color=grey shape=box]
+	140 -> proxy_call_16
+	getitem_34 [label="head_mask=getitem" color=black]
+	getitem_34 -> proxy_call_16
+	141 [label="encoder_hidden_states=None" color=grey shape=box]
+	141 -> proxy_call_16
+	142 [label="encoder_attention_mask=None" color=grey shape=box]
+	142 -> proxy_call_16
+	fetch_attr_5 [label="use_cache=fetch_attr" color=black]
+	fetch_attr_5 -> proxy_call_16
+	fetch_attr_1 [label="output_attentions=fetch_attr" color=black]
+	fetch_attr_1 -> proxy_call_16
+	getitem_35 [label=getitem color=black]
+	proxy_call_16 [label=proxy_call color=black]
+	proxy_call_16 -> getitem_35
+	143 [label=0 color=grey shape=box]
+	143 -> getitem_35
+	fetch_attr_57 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_57
+	144 [label="\"model_parallel\"" color=grey shape=box]
+	144 -> fetch_attr_57
+	getitem_36 [label=getitem color=black]
+	fetch_attr_27 [label=fetch_attr color=black]
+	fetch_attr_27 -> getitem_36
+	145 [label=10 color=grey shape=box]
+	145 -> getitem_36
+	fetch_attr_58 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_58
+	146 [label="\"model_parallel\"" color=grey shape=box]
+	146 -> fetch_attr_58
+	fetch_attr_59 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_59
+	147 [label="\"gradient_checkpointing\"" color=grey shape=box]
+	147 -> fetch_attr_59
+	getitem_37 [label=getitem color=black]
+	mul_0 [label=mul color=black]
+	mul_0 -> getitem_37
+	148 [label=10 color=grey shape=box]
+	148 -> getitem_37
+	proxy_call_17 [label=proxy_call color=black]
+	getitem_36 [label=getitem color=black]
+	getitem_36 -> proxy_call_17
+	getitem_35 [label=getitem color=black]
+	getitem_35 -> proxy_call_17
+	149 [label="layer_past=None" color=grey shape=box]
+	149 -> proxy_call_17
+	150 [label="attention_mask=None" color=grey shape=box]
+	150 -> proxy_call_17
+	getitem_37 [label="head_mask=getitem" color=black]
+	getitem_37 -> proxy_call_17
+	151 [label="encoder_hidden_states=None" color=grey shape=box]
+	151 -> proxy_call_17
+	152 [label="encoder_attention_mask=None" color=grey shape=box]
+	152 -> proxy_call_17
+	fetch_attr_5 [label="use_cache=fetch_attr" color=black]
+	fetch_attr_5 -> proxy_call_17
+	fetch_attr_1 [label="output_attentions=fetch_attr" color=black]
+	fetch_attr_1 -> proxy_call_17
+	getitem_38 [label=getitem color=black]
+	proxy_call_17 [label=proxy_call color=black]
+	proxy_call_17 -> getitem_38
+	153 [label=0 color=grey shape=box]
+	153 -> getitem_38
+	fetch_attr_60 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_60
+	154 [label="\"model_parallel\"" color=grey shape=box]
+	154 -> fetch_attr_60
+	getitem_39 [label=getitem color=black]
+	fetch_attr_27 [label=fetch_attr color=black]
+	fetch_attr_27 -> getitem_39
+	155 [label=11 color=grey shape=box]
+	155 -> getitem_39
+	fetch_attr_61 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_61
+	156 [label="\"model_parallel\"" color=grey shape=box]
+	156 -> fetch_attr_61
+	fetch_attr_62 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_62
+	157 [label="\"gradient_checkpointing\"" color=grey shape=box]
+	157 -> fetch_attr_62
+	getitem_40 [label=getitem color=black]
+	mul_0 [label=mul color=black]
+	mul_0 -> getitem_40
+	158 [label=11 color=grey shape=box]
+	158 -> getitem_40
+	proxy_call_18 [label=proxy_call color=black]
+	getitem_39 [label=getitem color=black]
+	getitem_39 -> proxy_call_18
+	getitem_38 [label=getitem color=black]
+	getitem_38 -> proxy_call_18
+	159 [label="layer_past=None" color=grey shape=box]
+	159 -> proxy_call_18
+	160 [label="attention_mask=None" color=grey shape=box]
+	160 -> proxy_call_18
+	getitem_40 [label="head_mask=getitem" color=black]
+	getitem_40 -> proxy_call_18
+	161 [label="encoder_hidden_states=None" color=grey shape=box]
+	161 -> proxy_call_18
+	162 [label="encoder_attention_mask=None" color=grey shape=box]
+	162 -> proxy_call_18
+	fetch_attr_5 [label="use_cache=fetch_attr" color=black]
+	fetch_attr_5 -> proxy_call_18
+	fetch_attr_1 [label="output_attentions=fetch_attr" color=black]
+	fetch_attr_1 -> proxy_call_18
+	getitem_41 [label=getitem color=black]
+	proxy_call_18 [label=proxy_call color=black]
+	proxy_call_18 -> getitem_41
+	163 [label=0 color=grey shape=box]
+	163 -> getitem_41
+	fetch_attr_63 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_63
+	164 [label="\"model_parallel\"" color=grey shape=box]
+	164 -> fetch_attr_63
+	fetch_attr_64 [label=fetch_attr color=black]
+	module_0 [label=module color=green4]
+	module_0 -> fetch_attr_64
+	165 [label="\"ln_f\"" color=grey shape=box]
+	165 -> fetch_attr_64
+	proxy_call_19 [label=proxy_call color=black]
+	fetch_attr_64 [label=fetch_attr color=black]
+	fetch_attr_64 -> proxy_call_19
+	getitem_41 [label=getitem color=black]
+	getitem_41 -> proxy_call_19
+	fetch_attr_65 [label=fetch_attr color=black]
+	proxy_call_19 [label=proxy_call color=black]
+	proxy_call_19 -> fetch_attr_65
+	166 [label="\"view\"" color=grey shape=box]
+	166 -> fetch_attr_65
+	proxy_call_20 [label=proxy_call color=black]
+	fetch_attr_65 [label=fetch_attr color=black]
+	fetch_attr_65 -> proxy_call_20
+	add_3 [label=add color=black]
+	add_3 -> proxy_call_20
+}
