@@ -36,7 +36,7 @@ from components import (
     Unembed,
 )
 from FactoredMatrix import FactoredMatrix
-from Nneuron import Nneuron
+from TransformerLens.transformer_lens.Nneuron import Nneuron
 
 # Note - activation cache is used with run_with_cache, past_key_value_caching is used for
 # generation.

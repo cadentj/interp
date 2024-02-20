@@ -17,7 +17,7 @@ from jaxtyping import Float, Int
 
 from FactoredMatrix import FactoredMatrix
 # from transformer_lens.hook_points import Nneuron
-from Nneuron import Nneuron
+from TransformerLens.transformer_lens.Nneuron import Nneuron
 from HookedTransformerConfig import HookedTransformerConfig
 from past_key_value_caching import HookedTransformerKeyValueCacheEntry
 from utils import gelu_fast, gelu_new, get_offset_position_ids, solu
