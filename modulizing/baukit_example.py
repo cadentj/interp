@@ -60,7 +60,6 @@ def custom_backend(gm: torch.fx.GraphModule, example_inputs: List[torch.Tensor])
                 wrapper_kwargs = node.kwargs
                 wrapper_node = gm.graph.call_module(wrapper_name, args=wrapper_args, kwargs=wrapper_kwargs)
                 node = wrapper_node
-                # node.replace_all_uses_with(wrapper_node)
             
     gm.recompile()
 
