@@ -42,9 +42,9 @@ class Envoy:
         self._sub_envoys: List[Envoy] = []
 
         # Register hook on underlying module to update the _fake_outputs and _fake_inputs on forward pass.
-        # self._hook_handle = self._module.register_forward_hook(
-        #     self._hook, with_kwargs=True
-        # )
+        self._hook_handle = self._module.register_forward_hook(
+            self._hook, with_kwargs=True
+        )
 
         if isinstance(module, torch.nn.ModuleList):
             for i, module in enumerate(self._module):
