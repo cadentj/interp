@@ -58,13 +58,14 @@ def custom_backend(gm: torch.fx.GraphModule, example_inputs: List[torch.Tensor])
         if node.op == 'call_method' and node.name == "tensor":
             if node.args[0].name == "query":
                 print('found')
-                with gm.graph.inserting_after(node):
+                with gm.graph.inserting_before(node):
                     wrapper_args = (node.args[0], )
-                    wrapper_kwargs = node.kwargs
-                    wrapper_node = gm.graph.call_module(wrapper_name, args=wrapper_args, kwargs=wrapper_kwargs)
-                    node = wrapper_node
+                    wrapper_node = gm.graph.call_module(wrapper_name, args=wrapper_args)
+                    
+                    node.update_arg(0, wrapper_node)
             
     gm.recompile()
+    print(gm)
 
     # gm.graph.print_tabular()
 

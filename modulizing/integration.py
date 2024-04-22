@@ -40,15 +40,26 @@ def custom_backend(gm: torch.fx.GraphModule, example_inputs: List[torch.Tensor])
     if wrapper_name not in gm._modules:
         gm.add_submodule(wrapper_name, wrapper_module)
 
+    found = False
     for node in gm.graph.nodes:    
+        arg_names = [arg.name for arg in node.args if hasattr(arg, "name")]
+        if "query" in arg_names:
+            query_index = arg_names.index("query")
 
-        if node.op == 'call_method' and node.name == "tensor":
-            if node.args[0].name == "query":
-                with gm.graph.inserting_after(node):
-                    wrapper_args = (node.args[0], )
-                    wrapper_kwargs = node.kwargs
-                    wrapper_node = gm.graph.call_module(wrapper_name, args=wrapper_args, kwargs=wrapper_kwargs)
-                    node = wrapper_node
+            with gm.graph.inserting_after(node):
+                wrapper_args = (node.args[query_index], )
+                wrapper_kwargs = node.kwargs
+                wrapper_node = gm.graph.call_module(wrapper_name, args=wrapper_args, kwargs=wrapper_kwargs)
+                node = wrapper_node
+
+            found = True
+
+        if found:
+            break
+        
+
+            
+
             
     gm.recompile()
 
@@ -79,4 +90,7 @@ nn_model._envoy = Envoy(nn_model._model)
 # %%
 with nn_model.trace("Please work", scan=False):
     test_save = nn_model.transformer.h[3].attn._orig_mod.output_wrapper.output.save()
+# %%
+
+test_save
 # %%
